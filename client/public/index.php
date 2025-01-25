@@ -23,9 +23,9 @@
       <table role="presentation">
         <tbody>
           <tr>
-            <td>Online: <span id="statusOnline" role="img"></span></td>
-            <td>Steam: <span id="statusSteam" role="img"></span></td>
-            <td>Account: <span id="statusAccount"></span></td>
+            <td>Online: <span id="statusOnline" role="img" aria-label="Unknown">❓</span></td>
+            <td>Steam: <span id="statusSteam" role="img" aria-label="Unknown">❓</span></td>
+            <td>Account: <span id="statusAccount">Unknown</span></td>
           </tr>
         </tbody>
       </table>
@@ -33,12 +33,17 @@
         <div>
           <label for="action">Action</label>
           <select name="action" id="action">
-            <option value="start">Start Steam</option>
-            <option value="stop">Stop Steam</option>
-            <option value="restart">Restart Steam</option>
-            <option value="poweron">Power on system</option>
-            <option value="poweroff">Power off system</option>
-            <option value="powercycle">Restart system</option>
+            <optgroup label="Steam">
+              <option value="start">Start Steam</option>
+              <option value="stop">Stop Steam</option>
+              <option value="restart">Restart Steam</option>
+            </optgroup>
+              <optgroup label="System">
+              <option value="poweron">Power on system</option>
+              <option value="poweroff">Power off system</option>
+              <option value="powercycle">Restart system</option>
+            </optgroup>
+            <option value="refresh">Refresh status</option>
           </select>
         </div>
         <div>
@@ -51,11 +56,14 @@
           </select>
         </div>
         <button type="submit">Run</button>
+        <label>
+          <input type="checkbox" name="force"> Force
+        </label>
       </form>
+      <div id='toast' class="toast notice" aria-live="polite" aria-atomic="true">
+        <span aria-hidden="true"></span> <span></span>
+      </div>
     </main>
-    <div id='toast' class="toast notice" aria-live="polite" aria-atomic="true">
-      <span aria-hidden="true"></span> <span></span>
-    </div>
     <script src="./js/script.js"></script>
   </body>
 </html>

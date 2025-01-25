@@ -1,5 +1,5 @@
 body > header {
-  padding: 0 .5rem 1rem;
+  padding-bottom: 0.75rem;
 }
 
 main {
@@ -27,14 +27,16 @@ form div {
   margin-right: 15px;
 }
 
+form button {
+  display: inline-block;
+}
+
 .toast {
   visibility: hidden;
   min-width: 250px;
-  margin-left: -125px;
   text-align: center;
   position: fixed;
   z-index: 5;
-  left: 50%;
   bottom: 30px;
   display: inline-flex;
 }
@@ -66,4 +68,37 @@ form div {
 @keyframes fadeout {
   from {bottom: 30px; opacity: 1;}
   to {bottom: 0; opacity: 0;}
+}
+
+@media only screen and (max-width: 480px) {
+  body > header {
+    padding-bottom: 0.5rem;
+  }
+
+  table {
+    width: 100%;
+  }
+
+  td span {
+    clear: both;
+    display: inline-block;
+    width: 100%;
+  }
+
+  form {
+    width: 100%;
+  }
+
+  form div {
+    display: block;
+    width: 100%;
+    margin-bottom: 1.5rem;
+  }
+
+  form button {
+    display: block;
+    width: 100%;
+    margin-top: 2.2rem;
+    margin-bottom: 0.5rem;
+  }
 }

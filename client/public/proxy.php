@@ -25,6 +25,8 @@ if (!function_exists('curl_init')) {
 }
 $ch = curl_init();
 curl_setopt($ch, CURLOPT_URL, $api_url . '/' . $action);
+curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 3);
+curl_setopt($ch, CURLOPT_TIMEOUT, 8);
 curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
