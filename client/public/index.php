@@ -4,6 +4,8 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="color-scheme" content="light dark">
     <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
     <meta name="theme-color" content="#212121" media="(prefers-color-scheme: dark)">
@@ -64,6 +66,6 @@
         <span aria-hidden="true"></span> <span></span>
       </div>
     </main>
-    <script src="./js/script.js"></script>
+    <script src="./js/script.js?v=1"></script>
   </body>
 </html>
