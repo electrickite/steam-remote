@@ -81,3 +81,12 @@ form.addEventListener('submit', async (e) => {
 
   updateInfo(1000, 0);
 });
+
+document.querySelectorAll('input[type="checkbox"]').forEach((checkbox) => {
+  checkbox.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  });
+});
