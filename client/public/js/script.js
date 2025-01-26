@@ -31,10 +31,10 @@ async function updateInfo(currentDelay, previousDelay, currentInfo) {
     status.account = 'Unknown';
   };
 
-  window.statusOnline.textContent = status.online ? '✅' : '❎';
+  window.statusOnline.textContent = status.online ? '✅' : '❌';
   window.statusOnline.setAttribute('aria-label', status.online ? 'Yes' : 'No');
   window.statusOnline.setAttribute('title', status.online ? 'Yes' : 'No');
-  window.statusSteam.textContent = status.steam ? '✅' : '❎';
+  window.statusSteam.textContent = status.steam ? '✅' : '❌';
   window.statusSteam.setAttribute('aria-label', status.steam ? 'Yes' : 'No');
   window.statusSteam.setAttribute('title', status.steam ? 'Yes' : 'No');
   window.statusAccount.textContent = status.account;
