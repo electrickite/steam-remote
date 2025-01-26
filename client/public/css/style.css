@@ -70,6 +70,10 @@ form button {
   to {bottom: 0; opacity: 0;}
 }
 
+.zoom {
+  zoom: 125%;
+}
+
 @media only screen and (max-width: 480px) {
   body > header {
     padding-bottom: 0.5rem;

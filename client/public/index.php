@@ -1,5 +1,7 @@
-<?php require_once dirname(dirname(__FILE__)) . '/config.php'; ?>
-<!DOCTYPE html>
+<?php
+  require_once dirname(dirname(__FILE__)) . '/config.php';
+  $bodyclass = str_contains(strtolower($_SERVER['HTTP_USER_AGENT'] ?? ''), 'steamdeck') ? 'zoom' : '';
+?><!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="utf-8">
@@ -14,9 +16,9 @@
     <link rel="icon" type="image/png" href="./img/link-icon-180.png">
     <link rel="apple-touch-icon" type="image/png" sizes="180x180" href="./img/link-icon-180.png">
     <link rel="stylesheet" href="./css/simple.min.css">
-    <link rel="stylesheet" href="./css/style.css?v=1">
+    <link rel="stylesheet" href="./css/style.css?v=2">
   </head>
-  <body>
+  <body class="<?= $bodyclass ?>">
     <header>
       <noscript><p class="notice">This page requires JavaScript to function!</p></noscript>
       <h1><?= $title ?? 'Steam Remote' ?></h1>
@@ -66,6 +68,6 @@
         <span aria-hidden="true"></span> <span></span>
       </div>
     </main>
-    <script src="./js/script.js?v=1"></script>
+    <script src="./js/script.js?v=2"></script>
   </body>
 </html>

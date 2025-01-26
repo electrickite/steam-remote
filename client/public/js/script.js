@@ -82,8 +82,16 @@ form.addEventListener('submit', async (e) => {
   updateInfo(1000, 0);
 });
 
+document.querySelectorAll('form input, form select, form button').forEach((input) => {
+  input.addEventListener('keydown', (e) => {
+    if (e.ctrlKey && e.key === '/') {
+      form.requestSubmit();
+    }
+  });
+});
+
 document.querySelectorAll('input[type="checkbox"]').forEach((checkbox) => {
-  checkbox.addEventListener('keypress', (e) => {
+  checkbox.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
       e.preventDefault();
       e.stopPropagation();
