@@ -113,6 +113,8 @@ async function steamStatus() {
 async function setSteamUser(username) {
   await runCommand('reg', 'add', config.steam.reg, '/f', '/v', 'AutoLoginUser',
     '/t', 'REG_SZ', '/d', username);
+  await runCommand('reg', 'add', config.steam.reg, '/f', '/v', 'RememberPassword',
+    '/t', 'REG_DWORD', '/d', '1');
 }
 
 function authorize(req, res) {
