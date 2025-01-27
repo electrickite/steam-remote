@@ -82,10 +82,15 @@ form.addEventListener('submit', async (e) => {
   updateInfo(1000, 0);
 });
 
-document.querySelectorAll('form input, form select, form button').forEach((input) => {
+document.querySelectorAll('form select, form button, form input').forEach((input, index, set) => {
   input.addEventListener('keydown', (e) => {
     if (e.ctrlKey && e.key === '/') {
       form.requestSubmit();
+    }
+    if (index == 0 && e.shiftKey && e.key == 'Tab') {
+      e.preventDefault();
+    } else if (index == set.length-1 && !e.shiftKey && e.key == 'Tab') {
+      e.preventDefault();
     }
   });
 });
