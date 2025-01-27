@@ -152,18 +152,14 @@ server.on('request', async (req, res) => {
 
     case '/poweroff': {
       if (!requireMethod(req, res, 'POST')) break;
-      const cmd = await runCommand('shutdown', '/s', '/t', '00');
-      cmd.status == 0
-        ? writeResponse(res, {message: 'Powering down system'}, 202)
-        : errorResponse(res, 500);
+      writeResponse(res, {message: 'Powering down system'}, 202);
+      runCommand('shutdown', '/s', '/t', '00');
       break; }
 
     case '/powercycle': {
       if (!requireMethod(req, res, 'POST')) break;
-      const cmd = await runCommand('shutdown', '/r', '/t', '00');
-      cmd.status == 0
-        ? writeResponse(res, {message: 'Restarting system'}, 202)
-        : errorResponse(res, 500);
+      writeResponse(res, {message: 'Restarting system'}, 202);
+      runCommand('shutdown', '/r', '/t', '00');
       break; }
 
     case '/stop': {
