@@ -8,6 +8,7 @@ let updateInfoTimer;
 
 async function updateInfo(currentDelay, previousDelay, currentInfo) {
   const status = {};
+  clearTimeout(updateInfoTimer);
 
   try {
     const res = await fetch(`${proxy}?action=info`, {
@@ -77,6 +78,8 @@ form.addEventListener('submit', async (e) => {
     } catch (error) {
       showToast('An error occurred requesting the action', '⚠');
     };
+  } else {
+    showToast('Updating system status...', '✓');
   }
 
   updateInfo(1000, 0);
@@ -84,15 +87,50 @@ form.addEventListener('submit', async (e) => {
 
 document.querySelectorAll('form select, form button, form input').forEach((input, index, set) => {
   input.addEventListener('keydown', (e) => {
-    if (e.ctrlKey && e.key === '/') {
-      form.requestSubmit();
-    }
-    if (index == 0 && e.shiftKey && e.key == 'Tab') {
-      e.preventDefault();
-    } else if (index == set.length-1 && !e.shiftKey && e.key == 'Tab') {
-      e.preventDefault();
+    switch (e.key) {
+      case '/':
+        if (e.ctrlKey)
+          form.requestSubmit();
+        break;
+      case 'Tab':
+        if (index <= 0 && e.shiftKey) {
+          e.preventDefault();
+        } else if (index >= set.length-1 && !e.shiftKey) {
+          e.preventDefault();
+        }
+        break;
+      case 'ArrowUp':
+        if (input.tagName != 'SELECT' && index > 0)
+          set[index-1].focus();
+        break;
+      case 'ArrowDown':
+        if (input.tagName != 'SELECT' && index < set.length-1)
+          set[index+1].focus();
+        break;
+      case 'ArrowLeft':
+        e.preventDefault();
+        if (index > 0)
+          set[index-1].focus();
+        break;
+      case 'ArrowRight':
+        e.preventDefault();
+        if (index < set.length-1)
+          set[index+1].focus();
+        break;
     }
   });
+});
+
+document.addEventListener('keydown', (e) => {
+  switch (e.key) {
+    case 'ArrowUp':
+    case 'ArrowDown':
+    case 'ArrowLeft':
+    case 'ArrowRight':
+      if (document.activeElement == document.body || !document.activeElement)
+        form.querySelector('select').focus();
+      break;
+  }
 });
 
 document.querySelectorAll('input[type="checkbox"]').forEach((checkbox) => {
