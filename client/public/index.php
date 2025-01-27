@@ -1,6 +1,8 @@
 <?php
   require_once dirname(dirname(__FILE__)) . '/config.php';
-  $bodyclass = str_contains(strtolower($_SERVER['HTTP_USER_AGENT'] ?? ''), 'steamdeck') ? 'zoom' : '';
+  $bodyclass = str_contains(strtolower(
+    $_GET['platform'] ?? $_SERVER['HTTP_USER_AGENT'] ?? ''
+  ), 'steamdeck') ? 'zoom' : '';
 ?><!DOCTYPE html>
 <html lang="en">
   <head>
