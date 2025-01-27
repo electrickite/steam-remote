@@ -56,13 +56,19 @@ function showToast(message, icon) {
   }, 2925);
 }
 
-updateInfo(2000, 1000);
+function refreshInfo() {
+  showToast('Updating system status...', '✓');
+  updateInfo(1000, 0);
+}
 
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
   const formData = new FormData(form);
 
-  if (formData.get('action') != 'refresh') {
+  if (formData.get('action') == 'refresh') {
+    refreshInfo();
+    return;
+  } else {
     try {
       const res = await fetch('proxy.php?action=%2Finfo', {
         method: 'POST',
@@ -78,8 +84,6 @@ form.addEventListener('submit', async (e) => {
     } catch (error) {
       showToast('An error occurred requesting the action', '⚠');
     };
-  } else {
-    showToast('Updating system status...', '✓');
   }
 
   updateInfo(1000, 0);
@@ -88,10 +92,6 @@ form.addEventListener('submit', async (e) => {
 document.querySelectorAll('form select, form button, form input').forEach((input, index, set) => {
   input.addEventListener('keydown', (e) => {
     switch (e.key) {
-      case '/':
-        if (e.ctrlKey)
-          form.requestSubmit();
-        break;
       case 'Tab':
         if (index <= 0 && e.shiftKey) {
           e.preventDefault();
@@ -130,6 +130,14 @@ document.addEventListener('keydown', (e) => {
       if (document.activeElement == document.body || !document.activeElement)
         form.querySelector('select').focus();
       break;
+    case '/':
+      if (e.ctrlKey)
+        form.requestSubmit();
+      break;
+    case '.':
+      if (e.ctrlKey)
+        refreshInfo();
+      break;
   }
 });
 
@@ -141,3 +149,5 @@ document.querySelectorAll('input[type="checkbox"]').forEach((checkbox) => {
     }
   });
 });
+
+updateInfo(2000, 1000);

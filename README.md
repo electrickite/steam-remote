@@ -77,8 +77,12 @@ To access the web GUI on the Steam Deck in gaming mode:
   9. Set it to `Mozilla/5.0 (X11; Linux x86_64; SteamDeck) Gecko/20100101 Firefox`
   10. Create a controller profile for the new game. Suggest starting with the
       Web Browser preset and customize. Keybaord shortcuts include:
-      Tab/Shift+Tab to move focus between controls, Space/Enter to activate
-      controls, Ctrl+W to quit, and Ctrl+/ to submit the form
+      * Move focus between controls: `Tab` and `Shift`+`Tab` or arrow keys
+      * Activate control: `Space` or `Enter`
+      * Run selected action: `Ctrl`+`/`
+      * Refresh system info: `Ctrl`+`.`
+      * Close browser: `Ctrl`+`W`
+      * Refresh page: `F5` or `Ctrl`+`F5`
 
 ## API
 
