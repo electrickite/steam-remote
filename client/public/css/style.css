@@ -50,6 +50,14 @@ form button {
   animation: fadein 0.5s, fadeout 0.5s 2.8s;
 }
 
+.toast.hide {
+  visibility: visible;
+  -webkit-animation: cssAnimation 0s ease-in 3s forwards;
+  animation: cssAnimation 0s ease-in 3s forwards;
+  -webkit-animation-fill-mode: forwards;
+  animation-fill-mode: forwards;
+}
+
 @-webkit-keyframes fadein {
   from {bottom: 0; opacity: 0;}
   to {bottom: 30px; opacity: 1;}
@@ -68,6 +76,21 @@ form button {
 @keyframes fadeout {
   from {bottom: 30px; opacity: 1;}
   to {bottom: 0; opacity: 0;}
+}
+
+@keyframes hideToast {
+  to {
+    width: 0;
+    height: 0;
+    visibility: hidden;
+  }
+}
+@-webkit-keyframes cssAnimation {
+  to {
+    width: 0;
+    height: 0;
+    visibility: hidden;
+  }
 }
 
 .zoom {

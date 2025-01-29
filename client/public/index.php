@@ -1,8 +1,62 @@
 <?php
-  require_once dirname(dirname(__FILE__)) . '/config.php';
-  $bodyclass = str_contains(strtolower(
+require_once dirname(dirname(__FILE__)) . '/lib.php';
+
+$get_status = isset($_GET['status']);
+$bodyclass = str_contains(strtolower(
     $_GET['platform'] ?? $_SERVER['HTTP_USER_AGENT'] ?? ''
-  ), 'steamdeck') ? 'zoom' : '';
+), 'steamdeck') ? 'zoom' : '';
+
+$toast_message = '';
+$toast_icon = '';
+
+
+if (isset($_POST['action']) && $_POST['action'] == 'poweron') {
+    $result = wake_on_lan();
+    if ($result) {
+        $toast_message = 'Power-on request sent successfully';
+        $toast_icon = '✓';
+    } else {
+        $toast_message = 'Error sending Wake on LAN packet';
+        $toast_icon = '⚠';
+    }
+} else if (isset($_POST['action'])) {
+    $res = api_request($_POST['action'], 'POST', $_POST);
+    if (isset($res['error'])) {
+        $toast_message = 'An error occurred requesting the action';
+        $toast_icon = '⚠';
+    } else if ($res['info']['http_code'] >= 200 && $res['info']['http_code'] < 300) {
+        $data = json_decode($res['body'], true);
+        $toast_message = $data['message'] ?? 'Action request successful';
+        $toast_icon = '✓';
+    } else {
+        $data = json_decode($res['body'], true);
+        $toast_message = $data['error'] ?? 'Action request successful';
+        $toast_icon = '⚠';
+    }
+    $get_status = true;
+}
+
+$online_label = 'Unknown';
+$online_icon = '❓';
+$steam_label = 'Unknown';
+$steam_icon = '❓';
+$account = 'Unknown';
+
+if ($get_status) {
+    $response = api_request('info');
+    if (!isset($response['error'])) {
+        $data = json_decode($response['body'], true);
+        $online_label = ($data && !isset($data['error'])) ? 'Yes' : 'No';
+        $steam_label = ($data['active'] ?? false) ? 'Yes' : 'No';
+        $account = $data['user'] ?? ($data['active'] ? 'Signed out' : 'Unknown');
+    } else {
+        $online_label = 'No';
+        $steam_label = 'No';
+        $account = 'Unknown';
+    }
+    $online_icon = $online_label == 'Yes' ? '✅' : '❌';
+    $steam_icon = $steam_label == 'Yes' ? '✅' : '❌';
+}
 ?><!DOCTYPE html>
 <html lang="en">
   <head>
@@ -22,20 +76,20 @@
   </head>
   <body class="<?= $bodyclass ?>">
     <header>
-      <noscript><p class="notice">This page requires JavaScript to function!</p></noscript>
       <h1><?= $title ?? 'Steam Remote' ?></h1>
     </header>
     <main>
+      <noscript><a href="?status=1">Refresh</a></noscript>
       <table role="presentation">
         <tbody>
           <tr>
-            <td>Online: <span id="statusOnline" role="img" aria-label="Unknown">❓</span></td>
-            <td>Steam: <span id="statusSteam" role="img" aria-label="Unknown">❓</span></td>
-            <td>Account: <span id="statusAccount">Unknown</span></td>
+          <td>Online: <span id="statusOnline" role="img" aria-label="<?= $online_label ?>" title="<?= $online_label ?>"><?= $online_icon ?></span></td>
+          <td>Steam: <span id="statusSteam" role="img" aria-label="<?= $steam_label ?>" title="<?= $steam_label ?>"><?= $steam_icon ?></span></td>
+            <td>Account: <span id="statusAccount"><?= $account ?></span></td>
           </tr>
         </tbody>
       </table>
-      <form>
+      <form method="POST">
         <div>
           <label for="action">Action</label>
           <select name="action" id="action">
@@ -49,7 +103,6 @@
               <option value="poweroff">Power off system</option>
               <option value="powercycle">Restart system</option>
             </optgroup>
-            <option value="refresh">Refresh status</option>
           </select>
         </div>
         <div>
@@ -66,7 +119,14 @@
           <input type="checkbox" name="force"> Force
         </label>
       </form>
-      <div id="toast" class="toast notice" role="status" aria-atomic="false"></div>
+      <div id="toast" class="toast notice<?= $toast_message ? ' hide' : '' ?>" role="status" aria-atomic="false">
+        <?php if ($toast_icon): ?>
+          <span aria-hidden="true"><?= $toast_icon ?></span>
+        <?php endif; ?>
+        <?php if ($toast_message): ?>
+          <span><?= $toast_message ?></span>
+        <?php endif; ?>
+      </div>
     </main>
     <script src="./js/script.js?v=5"></script>
   </body>

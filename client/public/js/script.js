@@ -2,6 +2,8 @@ const proxy = 'proxy.php';
 const result = document.getElementById('result');
 const form = document.querySelector('form');
 const toast = document.getElementById('toast');
+const actionSelect = document.getElementById('action');
+const userSelect = document.getElementById('user');
 
 const maxDelay = 60000;
 const status = {};
@@ -22,7 +24,7 @@ async function updateInfo(currentDelay, previousDelay, currentInfo) {
       previousDelay = 1000;
       currentInfo = newInfo;
     }
-    status.online = (data && !data.error) ? true : false;
+    status.online = (data && !data.error);
     status.steam = data.active ?? false;
     status.account = data.user ?? (data.active ? 'Signed out' : 'Unknown');
   } catch (error) {
@@ -195,9 +197,6 @@ document.querySelectorAll('input[type="checkbox"]').forEach((checkbox) => {
   });
 });
 
-const actionSelect = document.getElementById('action');
-const userSelect = document.getElementById('user');
-
 function setUserSelectState() {
   if (['start', 'restart'].includes(actionSelect.value)) {
     userSelect.disabled = false;
@@ -209,6 +208,11 @@ function setUserSelectState() {
 actionSelect.addEventListener('change', setUserSelectState);
 
 document.addEventListener('DOMContentLoaded', () => {
+  const refreshOption = document.createElement('option');
+  refreshOption.setAttribute('value', 'refresh');
+  refreshOption.textContent = 'Refresh status';
+  actionSelect.appendChild(refreshOption);
+
   setUserSelectState();
   updateInfo(2000, 1000);
 });
