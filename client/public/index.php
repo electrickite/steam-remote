@@ -18,7 +18,7 @@
     <link rel="icon" type="image/png" href="./img/link-icon-180.png">
     <link rel="apple-touch-icon" type="image/png" sizes="180x180" href="./img/link-icon-180.png">
     <link rel="stylesheet" href="./css/simple.min.css">
-    <link rel="stylesheet" href="./css/style.css?v=2">
+    <link rel="stylesheet" href="./css/style.css?v=3">
   </head>
   <body class="<?= $bodyclass ?>">
     <header>
@@ -41,8 +41,8 @@
           <select name="action" id="action">
             <optgroup label="Steam">
               <option value="start">Start Steam</option>
-              <option value="stop">Stop Steam</option>
               <option value="restart">Restart Steam</option>
+              <option value="stop">Stop Steam</option>
             </optgroup>
               <optgroup label="System">
               <option value="poweron">Power on system</option>
@@ -70,6 +70,6 @@
         <span aria-hidden="true"></span> <span></span>
       </div>
     </main>
-    <script src="./js/script.js?v=3"></script>
+    <script src="./js/script.js?v=4"></script>
   </body>
 </html>

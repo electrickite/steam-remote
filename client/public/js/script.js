@@ -4,10 +4,10 @@ const form = document.querySelector('form');
 const toast = document.getElementById('toast');
 
 const maxDelay = 60000;
+const status = {};
 let updateInfoTimer;
 
 async function updateInfo(currentDelay, previousDelay, currentInfo) {
-  const status = {};
   clearTimeout(updateInfoTimer);
 
   try {
@@ -53,7 +53,7 @@ function showToast(message, icon) {
     toast.classList.remove('show');
     toast.querySelector('span:first-child').textContent = '';
     toast.querySelector('span:last-child').textContent = '';
-  }, 2925);
+  }, 3200);
 }
 
 function refreshInfo() {
@@ -64,27 +64,49 @@ function refreshInfo() {
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
   const formData = new FormData(form);
+  const action = formData.get('action');
+  const force = formData.get('force');
 
-  if (formData.get('action') == 'refresh') {
-    refreshInfo();
-    return;
-  } else {
-    try {
-      const res = await fetch('proxy.php?action=%2Finfo', {
-        method: 'POST',
-        body: new URLSearchParams(formData),
-        signal: AbortSignal.timeout(10000),
-      });
-      const data = await res.json();
-      if (res.status >= 200 && res.status < 300) {
-        showToast(data.message ?? 'Action request successful', '✓');
-      } else {
-        showToast(data.error ?? 'An error occurred performing the action', '⚠');
+  switch (action) {
+    case 'refresh':
+      refreshInfo();
+      return;
+    case 'start':
+      if (!status.online && !force)
+        formData.set('action', 'poweron');
+      break;
+    case 'stop':
+    case 'restart':
+    case 'poweroff':
+    case 'powercycle':
+      if (!status.online && !force) {
+        showToast('The system is offline', '⚠');
+        return;
       }
-    } catch (error) {
-      showToast('An error occurred requesting the action', '⚠');
-    };
+      break;
+    case 'poweron':
+      if (status.online && !force) {
+        showToast('The system is online', '⚠');
+        return;
+      }
+      break;
   }
+
+  try {
+    const res = await fetch('proxy.php?action=%2Finfo', {
+      method: 'POST',
+      body: new URLSearchParams(formData),
+      signal: AbortSignal.timeout(10000),
+    });
+    const data = await res.json();
+    if (res.status >= 200 && res.status < 300) {
+      showToast(data.message ?? 'Action request successful', '✓');
+    } else {
+      showToast(data.error ?? 'An error occurred performing the action', '⚠');
+    }
+  } catch (error) {
+    showToast('An error occurred requesting the action', '⚠');
+  };
 
   updateInfo(1000, 0);
 });
@@ -100,22 +122,42 @@ document.querySelectorAll('form select, form button, form input').forEach((input
         }
         break;
       case 'ArrowUp':
-        if (input.tagName != 'SELECT' && index > 0)
-          set[index-1].focus();
+        if (input.tagName != 'SELECT' && index > 0) {
+          if (set[index-1].disabled) {
+            set[index-2].focus();
+          } else {
+            set[index-1].focus();
+          }
+        }
         break;
       case 'ArrowDown':
-        if (input.tagName != 'SELECT' && index < set.length-1)
-          set[index+1].focus();
+        if (input.tagName != 'SELECT' && index < set.length-1) {
+          if (set[index+1].disabled) {
+            set[index+2].focus();
+          } else {
+            set[index+1].focus();
+          }
+        }
         break;
       case 'ArrowLeft':
         e.preventDefault();
-        if (index > 0)
-          set[index-1].focus();
+        if (index > 0) {
+          if (set[index-1].disabled) {
+            set[index-2].focus();
+          } else {
+            set[index-1].focus();
+          }
+        }
         break;
       case 'ArrowRight':
         e.preventDefault();
-        if (index < set.length-1)
-          set[index+1].focus();
+        if (index < set.length-1) {
+          if (set[index+1].disabled) {
+            set[index+2].focus();
+          } else {
+            set[index+1].focus();
+          }
+        }
         break;
     }
   });
@@ -150,4 +192,20 @@ document.querySelectorAll('input[type="checkbox"]').forEach((checkbox) => {
   });
 });
 
-updateInfo(2000, 1000);
+const actionSelect = document.getElementById('action');
+const userSelect = document.getElementById('user');
+
+function setUserSelectState() {
+  if (['start', 'restart'].includes(actionSelect.value)) {
+    userSelect.disabled = false;
+  } else {
+    userSelect.disabled = true;
+  }
+}
+
+actionSelect.addEventListener('change', setUserSelectState);
+
+document.addEventListener('DOMContentLoaded', () => {
+  setUserSelectState();
+  updateInfo(2000, 1000);
+});
