@@ -66,9 +66,7 @@
           <input type="checkbox" name="force"> Force
         </label>
       </form>
-      <div id='toast' class="toast notice" aria-live="polite" aria-atomic="true">
-        <span aria-hidden="true"></span> <span></span>
-      </div>
+      <div id="toast" class="toast notice" role="status" aria-atomic="false"></div>
     </main>
     <script src="./js/script.js?v=5"></script>
   </body>
