@@ -72,7 +72,7 @@ if ($get_status) {
     <link rel="icon" type="image/png" href="./img/link-icon-180.png">
     <link rel="apple-touch-icon" type="image/png" sizes="180x180" href="./img/link-icon-180.png">
     <link rel="stylesheet" href="./css/simple.min.css">
-    <link rel="stylesheet" href="./css/style.css?v=3">
+    <link rel="stylesheet" href="./css/style.css?v=4">
   </head>
   <body class="<?= $bodyclass ?>">
     <header>
@@ -128,6 +128,6 @@ if ($get_status) {
         <?php endif; ?>
       </div>
     </main>
-    <script src="./js/script.js?v=5"></script>
+    <script src="./js/script.js?v=6"></script>
   </body>
 </html>
