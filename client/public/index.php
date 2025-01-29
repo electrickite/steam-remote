@@ -70,6 +70,6 @@
         <span aria-hidden="true"></span> <span></span>
       </div>
     </main>
-    <script src="./js/script.js?v=4"></script>
+    <script src="./js/script.js?v=5"></script>
   </body>
 </html>

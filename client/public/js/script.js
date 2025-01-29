@@ -46,13 +46,16 @@ async function updateInfo(currentDelay, previousDelay, currentInfo) {
 }
 
 function showToast(message, icon) {
-  toast.querySelector('span:first-child').textContent = icon;
-  toast.querySelector('span:last-child').textContent = message;
+  const iconEl = document.createElement('span');
+  iconEl.setAttribute('aria-hidden', 'true');
+  iconEl.textContent = icon;
+  const messageEl = document.createElement('span');
+  messageEl.textContent = message;
+  toast.replaceChildren(iconEl, messageEl);
   toast.classList.add('show');
   setTimeout(() => {
     toast.classList.remove('show');
-    toast.querySelector('span:first-child').textContent = '';
-    toast.querySelector('span:last-child').textContent = '';
+    toast.replaceChildren();
   }, 3200);
 }
 
