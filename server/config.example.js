@@ -27,6 +27,6 @@ export default {
     bin: 'Steam.exe',
     dir: 'C:\\Program Files (x86)\\Steam\\',
     reg: 'HKCU\\Software\\Valve\\Steam',
-    delay: 8000,
+    delay: 6000,
   },
 };

@@ -2,6 +2,7 @@ import http from 'http';
 import { parse as urlParse } from 'url';
 import qs from 'querystring';
 import childProcess from 'child_process';
+import { promises as fs } from 'fs';
 import config from './config.js';
 
 const accounts = new Map(config.accounts);
@@ -78,13 +79,25 @@ function runCommand(cmd, ...args) {
   });
 }
 
-function steamCommand(...args) {
+function steamSpawn(args = []) {
   args.push('-silent');
-  const proc = childProcess.spawn(config.steam.bin, args, {
+  return childProcess.spawn(config.steam.bin, args, {
     cwd: config.steam.dir,
     detached: true,
     stdio: 'ignore',
+    windowsHide: true,
   });
+}
+
+async function steamCommand(...args) {
+  const proc = steamSpawn(args);
+  return new Promise((resolve) => {
+    proc.on('close', resolve);
+  });
+}
+
+function steamCommandSync(...args) {
+  const proc = steamSpawn(args);
   proc.unref();
 }
 
@@ -110,11 +123,55 @@ async function steamStatus() {
   };
 }
 
+async function updateUsersVdf(username) {
+  const filePath = config.steam.dir + 'config\\loginusers.vdf';
+  try {
+  const contents = await fs.readFile(filePath, 'utf-8');
+  } catch (error) {
+    // Catch error and return early
+    return;
+  }
+  if (typeof contents !== 'string')
+    return;
+
+  const blockRegex = /^\s*"\d+"\s*$[^}]*}\s*$/gm;
+  const autoLoginRegex = /([^]"AllowAutoLogin"\s*)("\d+")([^])/g;
+  const recentRegex = /([^]"MostRecent"\s*)("\d+")([^])/g;
+  const rememberRegex = /([^]"RememberPassword"\s*)("\d+")([^])/g;
+
+  const userBlocks = contents.match(blockRegex);
+
+  let userIndex = null;
+  userBlocks.forEach((block, index) => {
+    if (block.includes(username))
+      userIndex = index;
+    userBlocks[index] = block
+      .replace(recentRegex, '$1"0"$3')
+      .replace(autoLoginRegex, '$1"1"$3')
+      .replace(rememberRegex, '$1"1"$3');
+  });
+  if (userIndex === null)
+    return;
+  let userBlock = userBlocks[userIndex];
+  userBlocks.splice(userIndex, 1);
+
+  userBlock = userBlock.replace(recentRegex, '$1"1"$3');
+  userBlocks.unshift(userBlock);
+  const newContents = '"users"\n{\n' + userBlocks.join('\n') + '\n}';
+
+  try {
+    await fs.writeFile(filePath, newContents, 'utf-8');
+  } catch (wrror) {
+    // Catch error and do nothing
+  }
+}
+
 async function setSteamUser(username) {
   await runCommand('reg', 'add', config.steam.reg, '/f', '/v', 'AutoLoginUser',
     '/t', 'REG_SZ', '/d', username);
   await runCommand('reg', 'add', config.steam.reg, '/f', '/v', 'RememberPassword',
     '/t', 'REG_DWORD', '/d', '1');
+  await updateUsersVdf(username);
 }
 
 function authorize(req, res) {
@@ -170,8 +227,10 @@ server.on('request', async (req, res) => {
       const steam = await steamStatus();
       if (!steam) { errorResponse(res, 500); break; }
       if (steam.active || post.force) {
-        steamCommand('-shutdown');
         writeResponse(res, {message: 'Shutting down Steam client'}, 202);
+        await steamCommand('-shutdown');
+        if (post.force)
+          await runCommand('taskkill', '/f', '/IM', config.steam.bin);
       } else {
         writeResponse(res, {message: 'Steam client not running'});
       }
@@ -185,11 +244,11 @@ server.on('request', async (req, res) => {
       if (steam.active && !post.force) {
         writeResponse(res, {message: 'Steam client running'});
       } else {
+        writeResponse(res, {message: 'Starting Steam client'}, 202);
         if (post.user && accounts.has(post.user)) {
           await setSteamUser(post.user);
         }
-        steamCommand();
-        writeResponse(res, {message: 'Starting Steam client'}, 202);
+        steamCommandSync();
       }
       break; }
 
@@ -200,15 +259,19 @@ server.on('request', async (req, res) => {
       if (!steam) { errorResponse(res, 500); break; }
       writeResponse(res, {message: 'Restarting Steam client'}, 202);
       if (steam.active || post.force) {
-        steamCommand('-shutdown');
+        steamCommandSync('-shutdown');
         await sleep(config.steam.delay);
         steam = await steamStatus();
       }
-      if (steam.active && !post.force) break;
+      if (steam.active && !post.force) {
+        break;
+      } else if (steam.active && post.force) {
+        await runCommand('taskkill', '/f', '/IM', config.steam.bin);
+      }
       if (post.user && accounts.has(post.user)) {
         await setSteamUser(post.user);
       }
-      steamCommand();
+      steamCommandSync();
       break; }
 
     default:
