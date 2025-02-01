@@ -9,7 +9,6 @@ $bodyclass = str_contains(strtolower(
 $toast_message = '';
 $toast_icon = '';
 
-
 if (isset($_POST['action']) && $_POST['action'] == 'poweron') {
     $result = wake_on_lan();
     if ($result) {
@@ -30,7 +29,7 @@ if (isset($_POST['action']) && $_POST['action'] == 'poweron') {
         $toast_icon = '✓';
     } else {
         $data = json_decode($res['body'], true);
-        $toast_message = $data['error'] ?? 'Action request successful';
+        $toast_message = $data['error'] ?? 'An error occurred requesting the action';
         $toast_icon = '⚠';
     }
     $get_status = true;
@@ -43,9 +42,9 @@ $steam_icon = '❓';
 $account = 'Unknown';
 
 if ($get_status) {
-    $response = api_request('info');
-    if (!isset($response['error'])) {
-        $data = json_decode($response['body'], true);
+    $res = api_request('info');
+    if (!isset($res['error'])) {
+        $data = json_decode($res['body'], true);
         $online_label = ($data && !isset($data['error'])) ? 'Yes' : 'No';
         $steam_label = ($data['active'] ?? false) ? 'Yes' : 'No';
         $account = $data['user'] ?? ($data['active'] ? 'Signed out' : 'Unknown');
