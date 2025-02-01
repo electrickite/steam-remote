@@ -1,6 +1,7 @@
 const proxy = 'proxy.php';
 const result = document.getElementById('result');
 const form = document.querySelector('form');
+const button = document.querySelector('form button');
 const toast = document.getElementById('toast');
 const actionSelect = document.getElementById('action');
 const userSelect = document.getElementById('user');
@@ -8,6 +9,7 @@ const userSelect = document.getElementById('user');
 const maxDelay = 60000;
 const status = {};
 let updateInfoTimer;
+let submitAllowed = true;
 
 async function updateInfo(currentDelay, previousDelay, currentInfo) {
   clearTimeout(updateInfoTimer);
@@ -66,12 +68,25 @@ function refreshInfo() {
   updateInfo(1000, 0);
 }
 
+function allowSubmit(allow) {
+  if (allow) {
+    submitAllowed = true;;
+    button.removeAttribute('aria-disabled');
+    button.classList.remove('disabled');
+  } else {
+    submitAllowed = false;
+    button.setAttribute('aria-disabled', 'true');
+    button.classList.add('disabled');
+  }
+}
+
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
   const formData = new FormData(form);
   const action = formData.get('action');
   const force = formData.get('force');
 
+  if (!submitAllowed) return;
   switch (action) {
     case 'refresh':
       refreshInfo();
@@ -96,6 +111,9 @@ form.addEventListener('submit', async (e) => {
       }
       break;
   }
+
+  allowSubmit(false);
+  setTimeout(allowSubmit, 1250, true);
 
   try {
     const res = await fetch('proxy.php?action=%2Finfo', {

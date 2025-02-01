@@ -44,6 +44,10 @@ function wake_on_lan() {
 
     $output = null;
     $retval = null;
+    exec("{$wol_path} -i {$broadcast} {$mac}", $output, $retval);
+    usleep(250000);
+    exec("{$wol_path} -i {$broadcast} {$mac}", $output, $retval);
+    usleep(250000);
     $result = exec("{$wol_path} -i {$broadcast} {$mac}", $output, $retval);
     return ($retval == 0 && $result !== false);
 }

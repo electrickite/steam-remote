@@ -31,6 +31,13 @@ form button {
   display: inline-block;
 }
 
+form button[aria-disabled="true"] {
+  cursor: not-allowed;
+  background-color: var(--disabled);
+  border-color: var(--disabled);
+  color: var(--text-light);
+}
+
 .toast {
   visibility: hidden;
   min-width: 250px;
