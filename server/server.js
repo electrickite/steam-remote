@@ -125,14 +125,14 @@ async function steamStatus() {
 
 async function updateUsersVdf(username) {
   const filePath = config.steam.dir + 'config\\loginusers.vdf';
+  let contents;
   try {
-  const contents = await fs.readFile(filePath, 'utf-8');
+    contents = await fs.readFile(filePath, 'utf-8');
+    if (typeof contents !== 'string') return;
   } catch (error) {
     // Catch error and return early
     return;
   }
-  if (typeof contents !== 'string')
-    return;
 
   const blockRegex = /^\s*"\d+"\s*$[^}]*}\s*$/gm;
   const autoLoginRegex = /([^]"AllowAutoLogin"\s*)("\d+")([^])/g;
